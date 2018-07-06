@@ -21,7 +21,7 @@ QuadRenderContext::QuadRenderContext(ShaderProgram &_program) : RenderContext(_p
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[ELEMENT_ARRAY_BUFFER]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
 	program.use();
-	program.vertexAttribPointer("aPosition", 2, GL_FLOAT, 0, 0);
+	program.vertexAttribPointer("POSITION", 2, GL_FLOAT, 0, 0);
 }
 
 void QuadRenderContext::render()
