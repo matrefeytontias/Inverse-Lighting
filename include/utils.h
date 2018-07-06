@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include <glad/glad.h>
+#include "glad/glad.h"
 
 void setwd(char **argv);
 std::string getFileContents(const char *path);
-int createShaderFromSource(int type, const char *path);
+GLuint createShaderFromSource(GLenum type, const char *path);
 void printShaderLog(GLuint shader);
 
 #define checkGLerror() _checkGLerror(__FILE__, __LINE__)

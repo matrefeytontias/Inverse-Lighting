@@ -17,6 +17,9 @@
 #include "tiny_gltf.h"
 #include "utils.h"
 
+#include "QuadRenderContext.h"
+#include "ShaderProgram.h"
+
 using namespace Eigen;
 using namespace tinygltf;
 
@@ -125,6 +128,12 @@ int main(int, char *argv[])
     glClearDepth(1.f);
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     
+    // Test-display a quad with a solid color
+    trace("Loading shader");
+    invLight::ShaderProgram quadProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
+    trace("Loading context");
+    invLight::QuadRenderContext quadContext(quadProgram);
+    
     trace("Entering drawing loop");
     
     float ratio = (float)display_w / display_h;
@@ -149,6 +158,8 @@ int main(int, char *argv[])
         // ImGui::ShowDemoWindow();
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        quadContext.render();
         
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());

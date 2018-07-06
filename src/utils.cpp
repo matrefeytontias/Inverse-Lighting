@@ -1,14 +1,10 @@
 #include "utils.h"
 
-#include <cstdio>
 #include <cstring>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <iterator>
-
 #include <unistd.h>
-
-#include "glad/glad.h"
 
 void setwd(char **argv)
 {
@@ -34,9 +30,9 @@ std::string getFileContents(const char *path)
 	return contents;
 }
 
-int createShaderFromSource(int type, const char *path)
+GLuint createShaderFromSource(GLenum type, const char *path)
 {
-	int shader = glCreateShader(type);
+	GLuint shader = glCreateShader(type);
 	std::string source = getFileContents(path);
 	const char *ind = source.c_str();
 	glShaderSource(shader, 1, &ind, NULL);
