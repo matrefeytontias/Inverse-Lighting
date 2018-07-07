@@ -31,8 +31,8 @@ static void glfw_error_callback(int error, const char *description)
 // Expects an identity matrix as input
 void perspective(Matrix4f &p, float fov, float ratio, float near, float far)
 {
-	float d = 1 / tan(fov * M_PI / 180 / 2);
-	float ir = 1. / (near - far);
+    float d = 1 / tan(fov * M_PI / 180 / 2);
+    float ir = 1. / (near - far);
     
     p(0, 0) = d;
     p(1, 1) = d * ratio;
@@ -69,7 +69,7 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 int main(int, char *argv[])
 {
     setwd(argv);
-	
+    
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -93,18 +93,18 @@ int main(int, char *argv[])
     ImGui_ImplGlfwGL3_Init(window, true);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
-	
+    
     // Setup style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-	
-	// Load the GLTF model
+    
+    // Load the GLTF model
     invLight::ShaderProgram modelProgram("shaders/modelVertex.glsl", "shaders/modelFragment.glsl");
     trace("Loading GLTF model ...");
     invLight::GltfModel model(modelProgram);
     TinyGLTF loader;
     std::string err;
-	
+    
     bool ret = loader.LoadASCIIFromFile(&model, &err, "DamagedHelmet/DamagedHelmet.gltf");
     // bool ret = loader.LoadBinaryFromFile(&model, &err, argv[1]); // for binary glTF(.glb)
     if (!err.empty())

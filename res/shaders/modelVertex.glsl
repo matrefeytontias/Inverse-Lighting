@@ -11,8 +11,8 @@ out vec2 vTexCoord;
 
 void main()
 {
-	vTexCoord = TEXCOORD_0;
-	mat3 rot = mat3(1., 0., 0., 0., cos(uTime), -sin(uTime), 0., sin(uTime), cos(uTime));
-	vNormal = rot * NORMAL;
-	gl_Position = uP * vec4(rot * POSITION - vec3(0., 0., 5.), 1.);
+    vTexCoord = TEXCOORD_0;
+    mat3 rot = mat3(1., 0., 0., 0., cos(uTime), -sin(uTime), 0., sin(uTime), cos(uTime));
+    vNormal = rot * NORMAL;
+    gl_Position = uP * vec4(rot * POSITION - vec3(0., 0., 5.), 1.);
 }

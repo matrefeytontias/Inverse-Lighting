@@ -8,38 +8,38 @@ using namespace invLight;
 
 ShaderProgram::ShaderProgram(const char *vertex, const char *fragment)
 {
-	glGenVertexArrays(1, &_vao);
-	glBindVertexArray(_vao);
-	
-	_program = glCreateProgram();
-	_vertexShader = createShaderFromSource(GL_VERTEX_SHADER, vertex);
-	printShaderLog(_vertexShader);
-	_fragmentShader = createShaderFromSource(GL_FRAGMENT_SHADER, fragment);
-	printShaderLog(_fragmentShader);
-	glAttachShader(_program, _vertexShader);
-	glAttachShader(_program, _fragmentShader);
-	glLinkProgram(_program);
+    glGenVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
+    
+    _program = glCreateProgram();
+    _vertexShader = createShaderFromSource(GL_VERTEX_SHADER, vertex);
+    printShaderLog(_vertexShader);
+    _fragmentShader = createShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    printShaderLog(_fragmentShader);
+    glAttachShader(_program, _vertexShader);
+    glAttachShader(_program, _fragmentShader);
+    glLinkProgram(_program);
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	glBindVertexArray(_vao);
-	
-	for(auto cpl : _attributes)
-		glDisableVertexAttribArray(cpl.second);
-	
-	glDetachShader(_program, _vertexShader);
-	glDetachShader(_program, _fragmentShader);
-	glDeleteShader(_vertexShader);
-	glDeleteShader(_fragmentShader);
-	glDeleteProgram(_program);
-	glDeleteVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
+    
+    for(auto cpl : _attributes)
+        glDisableVertexAttribArray(cpl.second);
+    
+    glDetachShader(_program, _vertexShader);
+    glDetachShader(_program, _fragmentShader);
+    glDeleteShader(_vertexShader);
+    glDeleteShader(_fragmentShader);
+    glDeleteProgram(_program);
+    glDeleteVertexArrays(1, &_vao);
 }
 
 void ShaderProgram::use()
 {
-	glBindVertexArray(_vao);
-	glUseProgram(_program);
+    glBindVertexArray(_vao);
+    glUseProgram(_program);
 }
 
 void ShaderProgram::uniform1f(string name, float v)
@@ -74,20 +74,20 @@ void ShaderProgram::uniformMatrix3fv(string name, GLuint count, const GLfloat *v
 
 void ShaderProgram::vertexAttribPointer(string name, GLuint size, GLenum type, GLsizei stride, const GLvoid *pointer)
 {
-	glEnableVertexAttribArray(ensureAttrib(name));
+    glEnableVertexAttribArray(ensureAttrib(name));
     glVertexAttribPointer(_attributes[name], size, type, GL_FALSE, stride, pointer);
 }
 
 GLint ShaderProgram::ensureUniform(string name)
 {
-	if(_uniforms.find(name) == _uniforms.end())
-		_uniforms[name] = glGetUniformLocation(_program, name.c_str());
-	return _uniforms[name];
+    if(_uniforms.find(name) == _uniforms.end())
+        _uniforms[name] = glGetUniformLocation(_program, name.c_str());
+    return _uniforms[name];
 }
 
 GLint ShaderProgram::ensureAttrib(string name)
 {
-	if(_attributes.find(name) == _attributes.end())
-		_attributes[name] = glGetAttribLocation(_program, name.c_str());
-	return _attributes[name];
+    if(_attributes.find(name) == _attributes.end())
+        _attributes[name] = glGetAttribLocation(_program, name.c_str());
+    return _attributes[name];
 }

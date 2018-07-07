@@ -10,8 +10,8 @@ namespace invLight
 class QuadRenderContext : public RenderContext
 {
 public:
-	QuadRenderContext(ShaderProgram &_program);
-	virtual void render() override;
+    QuadRenderContext(ShaderProgram &_program);
+    virtual void render() override;
 };
 
 }

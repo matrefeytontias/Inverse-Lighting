@@ -9,6 +9,6 @@ out vec4 fragColor;
 
 void main()
 {
-	fragColor = texture(uAlbedoMap, vTexCoord) * texture(uOcclusionMap, vTexCoord)
-		* max(0., vNormal.z);
+    fragColor = texture(uAlbedoMap, vTexCoord) * texture(uOcclusionMap, vTexCoord)
+        * max(0., vNormal.z);
 }
