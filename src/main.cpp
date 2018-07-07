@@ -137,7 +137,7 @@ int main(int, char *argv[])
     
     // Test-display a quad with a solid color
     trace("Loading shader");
-    invLight::ShaderProgram quadProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
+    invLight::ShaderProgram quadProgram("shaders/quadVertex.glsl", "shaders/quadFragment.glsl");
     trace("Loading context");
     invLight::QuadRenderContext quadContext(quadProgram);
     
