@@ -16,19 +16,19 @@ enum
 class RenderContext
 {
 public:
-	RenderContext(ShaderProgram &_program) : program(_program)
+	RenderContext(ShaderProgram &program) : _program(program)
 	{
-		glGenBuffers(ARRAY_BUFFERS, vbos);
+		glGenBuffers(ARRAY_BUFFERS, _vbos);
 	}
 	~RenderContext()
 	{
-		glDeleteBuffers(ARRAY_BUFFERS, vbos);
+		glDeleteBuffers(ARRAY_BUFFERS, _vbos);
 	}
 	
 	virtual void render() = 0;
 protected:
-	GLuint vbos[ARRAY_BUFFERS];
-	ShaderProgram &program;
+	GLuint _vbos[ARRAY_BUFFERS];
+	ShaderProgram &_program;
 };
 
 }

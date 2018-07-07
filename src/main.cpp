@@ -99,8 +99,9 @@ int main(int, char *argv[])
     //ImGui::StyleColorsClassic();
 	
 	// Load the GLTF model
+    invLight::ShaderProgram modelProgram("shaders/modelVertex.glsl", "shaders/modelFragment.glsl");
     trace("Loading GLTF model ...");
-    invLight::GltfModel model;
+    invLight::GltfModel model(modelProgram);
     TinyGLTF loader;
     std::string err;
 	
@@ -114,6 +115,9 @@ int main(int, char *argv[])
         return -1;
     }
     
+    model.initForRendering();
+    model.armForRendering();
+    
     trace("Model done loading");
     
     int display_w, display_h;
@@ -122,6 +126,9 @@ int main(int, char *argv[])
     Matrix4f p = Matrix4f::Identity();
     perspective(p, 90, (float)display_w / display_h, 0.1, 10);
     Matrix4f invP = p.inverse();
+    
+    modelProgram.use();
+    modelProgram.uniformMatrix4fv("uP", 1, p.data());
     
     glViewport(0, 0, display_w, display_h);
     
@@ -137,6 +144,8 @@ int main(int, char *argv[])
     trace("Entering drawing loop");
     
     float ratio = (float)display_w / display_h;
+    
+    glEnable(GL_DEPTH_TEST);
     
     while (!glfwWindowShouldClose(window))
     {
@@ -159,7 +168,12 @@ int main(int, char *argv[])
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        quadProgram.use();
         quadContext.render();
+        
+        modelProgram.use();
+        modelProgram.uniform1f("uTime", glfwGetTime());
+        model.render();
         
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
@@ -168,6 +182,8 @@ int main(int, char *argv[])
     }
     
     trace("Exiting drawing loop");
+    
+    model.cleanup();
     
     // Cleanup
     ImGui_ImplGlfwGL3_Shutdown();

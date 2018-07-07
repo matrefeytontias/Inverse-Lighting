@@ -8,16 +8,18 @@
 #include <glad/glad.h>
 #include "tiny_gltf.h"
 
+#include "RenderContext.h"
+#include "ShaderProgram.h"
+
 using namespace std;
 using namespace tinygltf;
 
 namespace invLight
 {
 
-class GltfModel : public Model
+class GltfModel : public Model, public RenderContext
 {
 private:
-    GLuint _buffers[2];
     vector<GLuint> _textureIds;
     vector<GLint> _textureLocations;
     vector<GLuint> _activeTextures;
@@ -27,18 +29,18 @@ private:
     
 public:
     
+    GltfModel(ShaderProgram &_program) : Model(), RenderContext(_program) { }
+    
     /**
-     * Creates VBOs and textures necessary for the rendering.
+     * Creates textures necessary for the rendering.
      */
     void initForRendering();
     
     /**
      * Fills the internal buffers for rendering. Also creates various
      * vertex attributes according to the underlying glTF file.
-     * @param   program a shader program for creating vertex attribs
-     * @return  a map of vertex attribute names to indices. Doesn't include unused vertex attribs
      */
-    map<string, GLint> armForRendering(GLuint program);
+    void armForRendering();
     
     GLuint indicesCount() const { return _indicesCount; }
     GLenum indicesType() const { return _indicesType; }
@@ -46,7 +48,7 @@ public:
     /**
      * Draws the model using the currently bound shader program.
      */
-    void render() const;
+    void render() override;
     
     int activeTexturesCount() const { return _activeTextures.size(); }
     

@@ -24,12 +24,12 @@ public:
 	void uniformMatrix4fv(string name, GLuint count, const GLfloat *v);
 	void uniformMatrix3fv(string name, GLuint count, const GLfloat *v);
 	void vertexAttribPointer(string name, GLuint size, GLenum type, GLsizei stride, const GLvoid *pointer);
-private:
 	GLint ensureUniform(string name);
 	GLint ensureAttrib(string name);
-	GLuint vao, program, vertexShader, fragmentShader;
-	map<string, GLint> uniforms;
-	map<string, GLint> attributes;
+private:
+	GLuint _vao, _program, _vertexShader, _fragmentShader;
+	map<string, GLint> _uniforms;
+	map<string, GLint> _attributes;
 };
 
 }

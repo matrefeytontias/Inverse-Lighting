@@ -19,12 +19,6 @@ typedef struct
     unsigned int componentType;
 } AttributeBufferInfo;
 
-enum
-{
-    ARRAY_BUFFER,
-    ELEMENT_ARRAY_BUFFER
-};
-
 GLenum getTextureFormatFromComponents(int components)
 {
     switch(components)
@@ -38,7 +32,7 @@ GLenum getTextureFormatFromComponents(int components)
     case 4:
         return GL_RGBA;
     default:
-        std::cerr << "Invalid number of components : " << components << std::endl;
+        trace("Invalid number of components : " << components);
         exit(1);
     }
 }
@@ -46,10 +40,9 @@ GLenum getTextureFormatFromComponents(int components)
 void GltfModel::initForRendering()
 {
     unsigned int n = textures.size();
-    glGenBuffers(2, _buffers);
     _textureIds.resize(n);
     glGenTextures(n, &_textureIds[0]);
-    std::cerr << "Filling textures" << std::endl;
+    trace("Filling textures");
     for(unsigned int i = 0; i < n; i++)
     {
         glActiveTexture(GL_TEXTURE0 + i);
@@ -63,13 +56,14 @@ void GltfModel::initForRendering()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
-    std::cerr << "Done initializing" << std::endl;
+    trace("Done initializing");
 }
 
-map<string, GLint> GltfModel::armForRendering(GLuint program)
+void GltfModel::armForRendering()
 {
     vector<AttributeBufferInfo> bufferFillingInfo;
-    map<string, int> vertexAttribs;
+    
+    _program.use();
     
     if (defaultScene < 0)
         defaultScene = 0;
@@ -106,10 +100,10 @@ map<string, GLint> GltfModel::armForRendering(GLuint program)
         bufferFillingInfo.push_back(info);
     }
     
-    std::cerr << "Calculated total byte length of " << totalByteLength << std::endl;
+    trace("Calculated total byte length of " << totalByteLength);
     
     // Create the data store for the array buffer
-    glBindBuffer(GL_ARRAY_BUFFER, _buffers[ARRAY_BUFFER]);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbos[VERTEX_ARRAY_BUFFER]);
     checkGLerror();
     glBufferData(GL_ARRAY_BUFFER, totalByteLength, NULL, GL_STATIC_DRAW);
     checkGLerror();
@@ -119,20 +113,11 @@ map<string, GLint> GltfModel::armForRendering(GLuint program)
     
     for(AttributeBufferInfo &info : bufferFillingInfo)
     {
-        std::cerr << "Filling attribute named " << info.name << std::endl;
+        trace("Filling attribute named " << info.name);
         glBufferSubData(GL_ARRAY_BUFFER, totalByteLength, info.byteLength, &buffers[info.bufferIndex].data[info.byteOffset]);
         checkGLerror();
-        GLint attrib = glGetAttribLocation(program, info.name.c_str());
+        _program.vertexAttribPointer(info.name, info.componentsPerElement, info.componentType, 0, (const GLvoid *)totalByteLength);
         checkGLerror();
-        // Register only if the attribute isn't unused
-        if(attrib > -1)
-        {
-            std::cerr << "Attrib found in shader program ; registering" << std::endl;
-            vertexAttribs[info.name] = attrib;
-            glEnableVertexAttribArray(attrib);
-            glVertexAttribPointer(attrib, info.componentsPerElement, info.componentType, GL_FALSE, 0, (const GLvoid *)totalByteLength);
-            checkGLerror();
-        }
         totalByteLength += info.byteLength;
     }
     
@@ -142,9 +127,9 @@ map<string, GLint> GltfModel::armForRendering(GLuint program)
     Buffer &buffer = buffers[bufferView.buffer];
     int bytesNb = accessor.count * GetComponentSizeInBytes(accessor.componentType) * GetTypeSizeInBytes(accessor.type);
     
-    std::cerr << "Buffering index data of byte length " << bytesNb << std::endl;
+    trace("Buffering index data of byte length " << bytesNb);
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers[ELEMENT_ARRAY_BUFFER]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbos[ELEMENT_ARRAY_BUFFER]);
     checkGLerror();
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, bytesNb, &buffer.data[bufferView.byteOffset + accessor.byteOffset], GL_STATIC_DRAW);
     checkGLerror();
@@ -160,39 +145,37 @@ map<string, GLint> GltfModel::armForRendering(GLuint program)
     
     if(material.values.find("baseColorTexture") != material.values.end())
     {
-        std::cerr << "Found baseColorTexture" << std::endl;
-        _textureLocations.push_back(glGetUniformLocation(program, "uAlbedoMap"));
+        trace("Found baseColorTexture");
+        _textureLocations.push_back(_program.ensureUniform("uAlbedoMap"));
         _activeTextures.push_back(material.values["baseColorTexture"].TextureIndex());
     }
     if(material.values.find("metallicRoughnessTexture") != material.values.end())
     {
-        std::cerr << "Found metallicRoughnessTexture" << std::endl;
-        _textureLocations.push_back(glGetUniformLocation(program, "uMetallicRoughness"));
+        trace("Found metallicRoughnessTexture");
+        _textureLocations.push_back(_program.ensureUniform("uMetallicRoughness"));
         _activeTextures.push_back(material.values["metallicRoughnessTexture"].TextureIndex());
     }
     if(material.additionalValues.find("normalTexture") != material.additionalValues.end())
     {
-        std::cerr << "Found normalTexture" << std::endl;
-        _textureLocations.push_back(glGetUniformLocation(program, "uNormalMap"));
+        trace("Found normalTexture");
+        _textureLocations.push_back(_program.ensureUniform("uNormalMap"));
         _activeTextures.push_back(material.additionalValues["normalTexture"].TextureIndex());
     }
     if(material.additionalValues.find("emissiveTexture") != material.additionalValues.end())
     {
-        std::cerr << "Found emissiveTexture" << std::endl;
-        _textureLocations.push_back(glGetUniformLocation(program, "uEmissiveMap"));
+        trace("Found emissiveTexture");
+        _textureLocations.push_back(_program.ensureUniform("uEmissiveMap"));
         _activeTextures.push_back(material.additionalValues["emissiveTexture"].TextureIndex());
     }
     if(material.additionalValues.find("occlusionTexture") != material.additionalValues.end())
     {
-        std::cerr << "Found occlusionTexture" << std::endl;
-        _textureLocations.push_back(glGetUniformLocation(program, "uOcclusionMap"));
+        trace("Found occlusionTexture");
+        _textureLocations.push_back(_program.ensureUniform("uOcclusionMap"));
         _activeTextures.push_back(material.additionalValues["occlusionTexture"].TextureIndex());
     }
-    
-    return vertexAttribs;
 }
 
-void GltfModel::render() const
+void GltfModel::render()
 {
     for(unsigned int i = 0; i < _activeTextures.size(); i++)
     {
@@ -204,13 +187,13 @@ void GltfModel::render() const
             glUniform1i(_textureLocations[i], i);
         }
     }
-    glBindBuffer(GL_ARRAY_BUFFER, _buffers[ARRAY_BUFFER]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffers[ELEMENT_ARRAY_BUFFER]);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbos[VERTEX_ARRAY_BUFFER]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbos[ELEMENT_ARRAY_BUFFER]);
     glDrawElements(_drawingMode, _indicesCount, _indicesType, NULL);
 }
 
 void GltfModel::cleanup()
 {
     glDeleteTextures(_textureIds.size(), &_textureIds[0]);
-    glDeleteBuffers(2, _buffers);
+    glDeleteBuffers(2, _vbos);
 }
