@@ -19,6 +19,7 @@
 
 #include "QuadRenderContext.h"
 #include "ShaderProgram.h"
+#include "TrackballControls.h"
 
 using namespace Eigen;
 using namespace tinygltf;
@@ -123,6 +124,10 @@ int main(int, char *argv[])
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     
+    invLight::Camera3D camera(Vector3f(0.f, 0.f, 5.f));
+    invLight::TrackballControls *trackball = &invLight::TrackballControls::getInstance(&camera, Vector4f(0.f, 0.f, display_w, display_h));
+    trackball->init(window);
+    
     Matrix4f p = Matrix4f::Identity();
     perspective(p, 90, (float)display_w / display_h, 0.1, 10);
     Matrix4f invP = p.inverse();
@@ -149,6 +154,8 @@ int main(int, char *argv[])
     
     while (!glfwWindowShouldClose(window))
     {
+        trackball->update();
+        
         glfwGetFramebufferSize(window, &display_w, &display_h);
         float newRatio = (float)display_w / display_h;
         if(ratio != newRatio)
@@ -172,7 +179,8 @@ int main(int, char *argv[])
         quadContext.render();
         
         modelProgram.use();
-        modelProgram.uniform1f("uTime", glfwGetTime());
+        modelProgram.uniformMatrix4fv("uV", 1, camera.m_viewMatr.data());
+        modelProgram.uniform3f("uCameraPos", camera.m_eye[0], camera.m_eye[1], camera.m_eye[2]);
         model.render();
         
         ImGui::Render();
