@@ -229,7 +229,7 @@ Vector3f TrackballControls::getMouseProjectionOnBall(int clientX, int clientY)
 {
     Vector3f mouseOnBall(
         ((float)clientX - (float)m_screen[2] * .5f) / (float)(m_screen[2] * .5f),
-        ((float)m_screen[3] * .5f - (float)clientY) / (float)(m_screen[3] * .5f),
+        ((float)clientY - (float)m_screen[3] * .5f) / (float)(m_screen[3] * .5f),
         0.f
     );
     
