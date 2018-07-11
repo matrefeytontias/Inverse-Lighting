@@ -141,7 +141,6 @@ int main(int, char *argv[])
     invLight::QuadRenderContext quadContext(quadProgram);
     
     int width, height, bpp; // bytes per pixel
-    stbi_set_flip_vertically_on_load(true);
     const float *environmentMap = stbi_loadf("environment.hdr", &width, &height, &bpp, 3);
     if(!environmentMap)
     {

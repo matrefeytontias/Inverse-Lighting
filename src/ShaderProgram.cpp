@@ -94,7 +94,6 @@ Texture &ShaderProgram::getTexture(const string name)
     {
         Texture tex;
         glGenTextures(1, &tex.id);
-        trace(tex.id);
         tex.target = GL_TEXTURE_2D;
         _textures[name] = tex;
     }
