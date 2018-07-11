@@ -97,7 +97,7 @@ int main(int, char *argv[])
     
     // Setup style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
+    // ImGui::StyleColorsClassic();
     
     // Load the GLTF model
     invLight::ShaderProgram modelProgram("shaders/modelVertex.glsl", "shaders/modelFragment.glsl");
@@ -132,25 +132,31 @@ int main(int, char *argv[])
     perspective(p, 90, (float)display_w / display_h, 0.1, 10);
     Matrix4f invP = p.inverse();
     
-    modelProgram.use();
-    modelProgram.uniformMatrix4fv("uP", 1, p.data());
-    
     glViewport(0, 0, display_w, display_h);
     
     glClearDepth(1.f);
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     
-    // Test-display a quad with a solid color
-    trace("Loading shader");
     invLight::ShaderProgram quadProgram("shaders/quadVertex.glsl", "shaders/quadFragment.glsl");
-    trace("Loading context");
     invLight::QuadRenderContext quadContext(quadProgram);
     
-    trace("Entering drawing loop");
+    int width, height, bpp; // bytes per pixel
+    stbi_set_flip_vertically_on_load(true);
+    const float *environmentMap = stbi_loadf("environment.hdr", &width, &height, &bpp, 3);
+    if(!environmentMap)
+    {
+        trace("Couldn't load image 'environment.hdr'");
+        return 1;
+    }
+    invLight::Texture &environmentTex = quadProgram.getTexture("uEnvironment");
+    glBindTexture(GL_TEXTURE_2D, environmentTex.id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, environmentMap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     float ratio = (float)display_w / display_h;
     
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     
     while (!glfwWindowShouldClose(window))
     {
@@ -166,19 +172,17 @@ int main(int, char *argv[])
             glViewport(0, 0, display_w, display_h);
         }
         
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         ImGui_ImplGlfwGL3_NewFrame();
-        // ImGui::ShowDemoWindow();
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         quadProgram.use();
+        quadProgram.uniformMatrix4fv("uInvP", 1, invP.data());
+        quadProgram.uniformMatrix4fv("uV", 1, camera.m_viewMatr.data());
         quadContext.render();
         
         modelProgram.use();
+        modelProgram.uniformMatrix4fv("uP", 1, p.data());
         modelProgram.uniformMatrix4fv("uV", 1, camera.m_viewMatr.data());
         modelProgram.uniform3f("uCameraPos", camera.m_eye[0], camera.m_eye[1], camera.m_eye[2]);
         model.render();
