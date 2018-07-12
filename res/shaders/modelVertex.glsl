@@ -8,13 +8,15 @@ in vec3 NORMAL;
 in vec3 POSITION;
 in vec2 TEXCOORD_0;
 out vec3 vNormal;
-out vec2 vTexCoord;
+out vec3 vPos;
 out vec3 vRay;
+out vec2 vTexCoord;
 
 void main()
 {
-    vTexCoord = TEXCOORD_0;
     vNormal = NORMAL;
+    vPos = POSITION;
     vRay = POSITION - uCameraPos;
+    vTexCoord = TEXCOORD_0;
     gl_Position = uP * uV * vec4(POSITION, 1.);
 }
