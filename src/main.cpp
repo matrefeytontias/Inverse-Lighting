@@ -9,7 +9,7 @@
 #include "imgui_impl_glfw_gl3.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "GltfModel.h"
+#include "ModelRenderContext.h"
 // Define these only in *one* .cpp file.
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -102,7 +102,7 @@ int main(int, char *argv[])
     // Load the GLTF model
     invLight::ShaderProgram modelProgram("shaders/modelVertex.glsl", "shaders/modelFragment.glsl");
     trace("Loading GLTF model ...");
-    invLight::GltfModel model(modelProgram);
+    invLight::ModelRenderContext model(modelProgram);
     TinyGLTF loader;
     std::string err;
     

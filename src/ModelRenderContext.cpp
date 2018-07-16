@@ -1,4 +1,4 @@
-#include "GltfModel.h"
+#include "ModelRenderContext.h"
 
 #include <iostream>
 
@@ -37,7 +37,7 @@ GLenum getTextureFormatFromComponents(int components)
     }
 }
 
-void GltfModel::initForRendering()
+void ModelRenderContext::initForRendering()
 {
     unsigned int n = textures.size();
     _textureIds.resize(n);
@@ -59,7 +59,7 @@ void GltfModel::initForRendering()
     trace("Done initializing");
 }
 
-void GltfModel::armForRendering()
+void ModelRenderContext::armForRendering()
 {
     vector<AttributeBufferInfo> bufferFillingInfo;
     
@@ -175,7 +175,7 @@ void GltfModel::armForRendering()
     }
 }
 
-void GltfModel::render()
+void ModelRenderContext::render()
 {
     for(unsigned int i = 0; i < _activeTextures.size(); i++)
     {
@@ -192,7 +192,7 @@ void GltfModel::render()
     glDrawElements(_drawingMode, _indicesCount, _indicesType, NULL);
 }
 
-void GltfModel::cleanup()
+void ModelRenderContext::cleanup()
 {
     glDeleteTextures(_textureIds.size(), &_textureIds[0]);
     glDeleteBuffers(2, _vbos);

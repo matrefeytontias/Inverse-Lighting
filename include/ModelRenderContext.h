@@ -1,5 +1,5 @@
-#ifndef DEF_GLTF_MODEL
-#define DEF_GLTF_MODEL
+#ifndef INC_MODEL_RENDER_CONTEXT
+#define INC_MODEL_RENDER_CONTEXT
 
 #include <map>
 #include <string>
@@ -17,7 +17,7 @@ using namespace tinygltf;
 namespace invLight
 {
 
-class GltfModel : public Model, public RenderContext
+class ModelRenderContext : public Model, public RenderContext
 {
 private:
     vector<GLuint> _textureIds;
@@ -29,7 +29,7 @@ private:
     
 public:
     
-    GltfModel(ShaderProgram &_program) : Model(), RenderContext(_program) { }
+    ModelRenderContext(ShaderProgram &_program) : Model(), RenderContext(_program) { }
     
     /**
      * Creates textures necessary for the rendering.
