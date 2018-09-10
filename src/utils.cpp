@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <stdexcept>
+#include <string>
 #include <unistd.h>
 
 void setwd(char **argv)
@@ -26,6 +28,8 @@ std::string getFileContents(const char *path)
 {
     std::ifstream ifs;
     ifs.open(path, std::ios_base::in | std::ios_base::binary);
+    if(ifs.fail())
+        fatal("Could not open file " << path);
     std::string contents(std::istreambuf_iterator<char>{ifs}, std::istreambuf_iterator<char>{});
     return contents;
 }
