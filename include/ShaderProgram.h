@@ -13,8 +13,8 @@ namespace invLight
 
 struct Texture
 {
-    GLuint id;
-    GLenum target;
+    GLuint id = -1;
+    GLenum target = GL_TEXTURE_2D;
 };
 
 class ShaderProgram
@@ -31,6 +31,7 @@ public:
     void uniformMatrix3fv(const string name, GLuint count, const GLfloat *v);
     void vertexAttribPointer(const string name, GLuint size, GLenum type, GLsizei stride, const GLvoid *pointer);
     Texture &getTexture(const string name);
+    Texture &registerTexture(const string name, const Texture &tex);
     unsigned int getTexturesAmount() const { return _textures.size(); }
     GLint ensureUniform(const string &name);
     GLint ensureAttrib(const string &name);
