@@ -2,6 +2,7 @@
 // #define TINYGLTF_NOEXCEPTION // optional. disable exception handling.
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 #include <Eigen/Eigen>
@@ -17,6 +18,7 @@
 #include "tiny_gltf.h"
 #include "utils.h"
 
+#include "EnvironmentMap.h"
 #include "QuadRenderContext.h"
 #include "ShaderProgram.h"
 #include "TrackballControls.h"
@@ -67,7 +69,7 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 }
 
-int main(int, char *argv[])
+int _main(int, char *argv[])
 {
     setwd(argv);
     
@@ -121,6 +123,10 @@ int main(int, char *argv[])
     
     trace("Model done loading");
     
+    trace("Loading environment map ...");
+    invLight::EnvironmentMap envMap("environment.hdr");
+    trace("Environment map done loading");
+    
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     
@@ -136,21 +142,6 @@ int main(int, char *argv[])
     
     glClearDepth(1.f);
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-    
-    invLight::ShaderProgram quadProgram("shaders/quadVertex.glsl", "shaders/quadFragment.glsl");
-    invLight::QuadRenderContext quadContext(quadProgram);
-    
-    int width, height, bpp; // bytes per pixel
-    const float *environmentMap = stbi_loadf("environment.hdr", &width, &height, &bpp, 3);
-    if(!environmentMap)
-    {
-        trace("Couldn't load image 'environment.hdr'");
-        return 1;
-    }
-    invLight::Texture &environmentTex = quadProgram.getTexture("uEnvironment");
-    glBindTexture(GL_TEXTURE_2D, environmentTex.id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, environmentMap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     float ratio = (float)display_w / display_h;
     
@@ -175,10 +166,7 @@ int main(int, char *argv[])
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        quadProgram.use();
-        quadProgram.uniformMatrix4fv("uInvP", 1, invP.data());
-        quadProgram.uniformMatrix4fv("uV", 1, camera.m_viewMatr.data());
-        quadContext.render();
+        envMap.render(camera, invP);
         
         modelProgram.use();
         modelProgram.uniformMatrix4fv("uP", 1, p.data());
@@ -202,4 +190,17 @@ int main(int, char *argv[])
     glfwTerminate();
     
     return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    try
+    {
+        return _main(argc, argv);
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << e.what();
+        throw;
+    }
 }
