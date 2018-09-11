@@ -125,10 +125,12 @@ int _main(int, char *argv[])
     
     trace("Loading environment map ...");
     invLight::EnvironmentMap envMap("environment.hdr");
+    envMap.precomputeIrradiance(256, 256);
     trace("Environment map done loading");
     
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
     
     invLight::Camera3D camera(Vector3f(0.f, 0.f, 5.f));
     invLight::TrackballControls *trackball = &invLight::TrackballControls::getInstance(&camera, Vector4f(0.f, 0.f, display_w, display_h));
@@ -137,8 +139,6 @@ int _main(int, char *argv[])
     Matrix4f p = Matrix4f::Identity();
     perspective(p, 90, (float)display_w / display_h, 0.1, 10);
     Matrix4f invP = p.inverse();
-    
-    glViewport(0, 0, display_w, display_h);
     
     glClearDepth(1.f);
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
@@ -173,6 +173,9 @@ int _main(int, char *argv[])
         modelProgram.uniformMatrix4fv("uV", 1, camera.m_viewMatr.data());
         modelProgram.uniform3f("uCameraPos", camera.m_eye[0], camera.m_eye[1], camera.m_eye[2]);
         model.render();
+        
+        displayTexture(envMap.getMap().id, 0, 0);
+        displayTexture(envMap.getIrradianceMap().id, 0, -1);
         
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());

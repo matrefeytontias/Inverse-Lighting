@@ -9,7 +9,7 @@ const float PI = 3.14159265359;
 
 vec2 norm2equirectangular(vec3 dir)
 {
-    vec2 uv = vec2(atan(dir.z, dir.x) / (2. * PI) + 0.5, acos(dir.y) / PI);
+    vec2 uv = vec2(atan(-dir.z, dir.x) / (2. * PI) + 0.5, acos(dir.y) / PI);
     return uv;
 }
 

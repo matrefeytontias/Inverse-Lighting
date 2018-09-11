@@ -29,7 +29,7 @@ ShaderProgram::~ShaderProgram()
         glDisableVertexAttribArray(cpl.second);
     
     for(auto tex : _textures)
-        if(!tex.persistent)
+        if(!tex.second.persistent)
             glDeleteTextures(1, &tex.second.id);
     
     glDetachShader(_program, _vertexShader);

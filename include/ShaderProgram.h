@@ -13,7 +13,7 @@ namespace invLight
 
 struct Texture
 {
-    GLuint id = -1;
+    GLuint id = 0;
     GLenum target = GL_TEXTURE_2D;
     bool persistent = false;
 };

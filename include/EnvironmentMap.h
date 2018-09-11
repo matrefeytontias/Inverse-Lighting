@@ -18,13 +18,20 @@ namespace invLight
 class EnvironmentMap
 {
 public:
-	EnvironmentMap(const string &path);
-	~EnvironmentMap();
-	void render(Camera3D &cam, Matrix4f &invProjMat);
+    EnvironmentMap(const string &path);
+    ~EnvironmentMap();
+    void precomputeIrradiance(int width = 0, int height = 0);
+    void precomputeSpecular();
+    void render(Camera3D &cam, Matrix4f &invProjMat);
+    
+    const Texture& getMap() { return _map; }
+    const Texture& getIrradianceMap() { return _irradianceMap; }
+    const Texture& getSpecularMap() { return _specularMap; }
+    const Texture& getBRDFMap() { return _brdfMap; }
 private:
-	Texture _map, _irradianceMap, _specularMap;
-	ShaderProgram _skyboxProgram;
-	QuadRenderContext _skyboxContext;
+    Texture _map, _irradianceMap, _specularMap, _brdfMap;
+    ShaderProgram _skyboxProgram;
+    QuadRenderContext _skyboxContext;
 };
 
 }
