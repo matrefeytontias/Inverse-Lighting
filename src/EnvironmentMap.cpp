@@ -19,7 +19,7 @@ EnvironmentMap::EnvironmentMap(const string &path) :
     if(!environmentMap)
         fatal("Couldn't load image " << path);
     glGenTextures(1, &_map.id);
-    _map = _skyboxProgram.registerTexture("uEnvironment");
+    _skyboxProgram.registerTexture("uEnvironment", _map);
     glBindTexture(GL_TEXTURE_2D, _map.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, environmentMap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
