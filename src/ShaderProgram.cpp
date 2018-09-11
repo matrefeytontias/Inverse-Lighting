@@ -52,43 +52,43 @@ void ShaderProgram::use()
     }
 }
 
-void ShaderProgram::uniform1f(const string name, float v)
+void ShaderProgram::uniform1f(const string &name, float v)
 {
     glUniform1f(ensureUniform(name), v);
 }
 
-void ShaderProgram::uniform2f(const string name, float v1, float v2)
+void ShaderProgram::uniform2f(const string &name, float v1, float v2)
 {
     glUniform2f(ensureUniform(name), v1, v2);
 }
 
-void ShaderProgram::uniform3f(const string name, float v1, float v2, float v3)
+void ShaderProgram::uniform3f(const string &name, float v1, float v2, float v3)
 {
     glUniform3f(ensureUniform(name), v1, v2, v3);
 }
 
-void ShaderProgram::uniform4f(const string name, float v1, float v2, float v3, float v4)
+void ShaderProgram::uniform4f(const string &name, float v1, float v2, float v3, float v4)
 {
     glUniform4f(ensureUniform(name), v1, v2, v3, v4);
 }
 
-void ShaderProgram::uniformMatrix4fv(const string name, GLuint count, const GLfloat *v)
+void ShaderProgram::uniformMatrix4fv(const string &name, GLuint count, const GLfloat *v)
 {
     glUniformMatrix4fv(ensureUniform(name), count, GL_FALSE, v);
 }
 
-void ShaderProgram::uniformMatrix3fv(const string name, GLuint count, const GLfloat *v)
+void ShaderProgram::uniformMatrix3fv(const string &name, GLuint count, const GLfloat *v)
 {
     glUniformMatrix3fv(ensureUniform(name), count, GL_FALSE, v);
 }
 
-void ShaderProgram::vertexAttribPointer(const string name, GLuint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+void ShaderProgram::vertexAttribPointer(const string &name, GLuint size, GLenum type, GLsizei stride, const GLvoid *pointer)
 {
     glEnableVertexAttribArray(ensureAttrib(name));
     glVertexAttribPointer(_attributes[name], size, type, GL_FALSE, stride, pointer);
 }
 
-Texture &ShaderProgram::getTexture(const string name)
+Texture &ShaderProgram::getTexture(const string &name)
 {
     if(_textures.find(name) == _textures.end())
     {
@@ -99,7 +99,7 @@ Texture &ShaderProgram::getTexture(const string name)
     return _textures[name];
 }
 
-Texture &ShaderProgram::registerTexture(const string name, const Texture &tex)
+Texture &ShaderProgram::registerTexture(const string &name, const Texture &tex)
 {
     return _textures[name] = tex;
 }
