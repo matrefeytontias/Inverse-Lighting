@@ -1,6 +1,7 @@
 #ifndef INC_UTILS
 #define INC_UTILS
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <sstream>

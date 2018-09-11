@@ -90,8 +90,8 @@ void displayTexture(GLint texture, float dx, float dy)
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     
-    vertex_shader = createShaderFromSource(GL_VERTEX_SHADER, "shaders/display_texture_vert.glsl");
-    fragment_shader = createShaderFromSource(GL_FRAGMENT_SHADER, "shaders/display_texture_frag.glsl");
+    vertex_shader = createShaderFromSource(GL_VERTEX_SHADER, "shaders/displayTextureVertex.glsl");
+    fragment_shader = createShaderFromSource(GL_FRAGMENT_SHADER, "shaders/displayTextureFragment.glsl");
     
     program = glCreateProgram();
     glAttachShader(program, vertex_shader);
@@ -99,8 +99,8 @@ void displayTexture(GLint texture, float dx, float dy)
     glLinkProgram(program);
     glUseProgram(program);
     
-    aPos_location = glGetAttribLocation(program, "aPos");
-    aTexCoord_location = glGetAttribLocation(program, "aTexCoord");
+    aPos_location = glGetAttribLocation(program, "POSITION");
+    aTexCoord_location = glGetAttribLocation(program, "TEXCOORD0");
     uTex_location = glGetUniformLocation(program, "uTex");
     glEnableVertexAttribArray(aPos_location);
     glVertexAttribPointer(aPos_location, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void *)0);
