@@ -94,6 +94,7 @@ Texture &ShaderProgram::getTexture(const string &name)
     if(_textures.find(name) == _textures.end())
     {
         Texture tex;
+        tex.persistent = false;
         glGenTextures(1, &tex.id);
         _textures[name] = tex;
     }

@@ -18,8 +18,8 @@ EnvironmentMap::EnvironmentMap(const string &path) :
     float *environmentMap = stbi_loadf(path.c_str(), &width, &height, &bpp, 3);
     if(!environmentMap)
         fatal("Couldn't load image " << path);
-    _map = _skyboxProgram.getTexture("uEnvironment");
-    _map.persistent = true;
+    glGenTextures(1, &_map.id);
+    _map = _skyboxProgram.registerTexture("uEnvironment");
     glBindTexture(GL_TEXTURE_2D, _map.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, environmentMap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -31,12 +31,9 @@ EnvironmentMap::EnvironmentMap(const string &path) :
 EnvironmentMap::~EnvironmentMap()
 {
     glDeleteTextures(1, &_map.id);
-    if(_irradianceMap.id > 0)
-        glDeleteTextures(1, &_irradianceMap.id);
-    if(_specularMap.id > 0)
-        glDeleteTextures(1, &_specularMap.id);
-    if(_brdfMap.id > 0)
-        glDeleteTextures(1, &_brdfMap.id);
+    glDeleteTextures(1, &_irradianceMap.id);
+    glDeleteTextures(1, &_specularMap.id);
+    glDeleteTextures(1, &_brdfMap.id);
 }
 
 void EnvironmentMap::precomputeIrradiance(int width, int height)
