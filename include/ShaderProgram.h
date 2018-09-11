@@ -15,6 +15,7 @@ struct Texture
 {
     GLuint id = -1;
     GLenum target = GL_TEXTURE_2D;
+    bool persistent = false;
 };
 
 class ShaderProgram
