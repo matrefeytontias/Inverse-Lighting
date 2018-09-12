@@ -6,6 +6,8 @@
 
 using namespace invLight;
 
+GLuint ShaderProgram::commonIdV = 0, ShaderProgram::commonIdF = 0;
+
 ShaderProgram::ShaderProgram(const char *vertex, const char *fragment)
 {
     glGenVertexArrays(1, &_vao);
@@ -18,6 +20,9 @@ ShaderProgram::ShaderProgram(const char *vertex, const char *fragment)
     printShaderLog(_fragmentShader);
     glAttachShader(_program, _vertexShader);
     glAttachShader(_program, _fragmentShader);
+    // Add common shaders
+    glAttachShader(_program, getCommonIdV());
+    glAttachShader(_program, getCommonIdF());
     glLinkProgram(_program);
 }
 
@@ -118,4 +123,23 @@ GLint ShaderProgram::ensureAttrib(const string &name)
     if(_attributes.find(name) == _attributes.end())
         _attributes[name] = glGetAttribLocation(_program, name.c_str());
     return _attributes[name];
+}
+
+GLuint ShaderProgram::getCommonIdF()
+{
+    if(commonIdF == 0)
+    {
+        commonIdF = createShaderFromSource(GL_FRAGMENT_SHADER, "shaders/commonFragment.glsl");
+        printShaderLog(commonIdF);
+    }
+    return commonIdF;
+}
+GLuint ShaderProgram::getCommonIdV()
+{
+    if(commonIdV == 0)
+    {
+        commonIdV = createShaderFromSource(GL_VERTEX_SHADER, "shaders/commonVertex.glsl");
+        printShaderLog(commonIdV);
+    }
+    return commonIdV;
 }

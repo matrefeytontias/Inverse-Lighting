@@ -125,8 +125,9 @@ int _main(int, char *argv[])
     
     trace("Loading environment map ...");
     invLight::EnvironmentMap envMap("environment.hdr");
-    envMap.precomputeIrradiance(256, 256);
+    envMap.precomputeIrradiance(64, 64);
     trace("Environment map done loading");
+    modelProgram.registerTexture("uIrradianceMap", envMap.getIrradianceMap());
     
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);

@@ -37,6 +37,9 @@ public:
     GLint ensureUniform(const string &name);
     GLint ensureAttrib(const string &name);
 private:
+    static GLuint commonIdV, commonIdF;
+    GLuint getCommonIdF();
+    GLuint getCommonIdV();
     GLuint _vao, _program, _vertexShader, _fragmentShader;
     map<string, GLint> _uniforms;
     map<string, GLint> _attributes;
